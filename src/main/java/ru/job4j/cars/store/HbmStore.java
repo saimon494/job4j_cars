@@ -6,9 +6,7 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import ru.job4j.cars.model.Brand;
-import ru.job4j.cars.model.Post;
-import ru.job4j.cars.model.User;
+import ru.job4j.cars.model.*;
 
 import java.util.List;
 import java.util.function.Function;
@@ -43,11 +41,33 @@ public class HbmStore implements Store, AutoCloseable {
         }
     }
 
-    @Override
-    public List<Post> findAllPost() {
-        return tx(session -> session.createQuery(
-                "from Post"
-        ).list());
+    public <T> boolean save(T model) {
+        return tx(session -> {
+            session.save(model);
+            return true;
+        });
+    }
+
+    public <T> boolean update(T model) {
+        return tx(session -> {
+            session.update(model);
+            return true;
+        });
+    }
+
+    public <T> boolean delete(T model) {
+        return tx(session -> {
+            session.delete(model);
+            return true;
+        });
+    }
+
+    public <T> List<T> findAll(Class<T> cl) {
+        return tx(session -> session.createQuery("from " + cl.getName(), cl).list());
+    }
+
+    public <T> T findById(Class<T> cl, Integer id) {
+        return tx(session -> session.get(cl, id));
     }
 
     @Override
@@ -72,46 +92,12 @@ public class HbmStore implements Store, AutoCloseable {
     }
 
     @Override
-    public Post findPostById(int id) {
-        return tx(session -> session.get(Post.class, id));
-    }
-
-    @Override
-    public boolean save(Post post) {
-        return tx(session -> {
-            session.save(post);
-            return true;
-        });
-    }
-
-    @Override
-    public boolean delete(int id) {
-        return tx(session -> {
-            Post post = session.get(Post.class, id);
-            session.delete(post);
-            return true;
-        });
-    }
-
-    @Override
-    public List<User> findAllUser() {
-        return tx(session -> session.createQuery("FROM User").list());
-    }
-
     public User findUserByEmail(String email) {
         return tx(session ->
                 (User) session.createQuery("from User where email = :email")
                         .setParameter("email", email)
                         .uniqueResult()
         );
-    }
-
-    @Override
-    public boolean save(User user) {
-        return tx(session -> {
-            session.saveOrUpdate(user);
-            return true;
-        });
     }
 
     @Override

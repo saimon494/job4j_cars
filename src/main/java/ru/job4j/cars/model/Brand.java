@@ -1,9 +1,9 @@
 package ru.job4j.cars.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -17,7 +17,8 @@ public class Brand {
 
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "brand")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "brand",
+            cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Model> models;
 
     public Brand() {
@@ -43,6 +44,7 @@ public class Brand {
         this.name = name;
     }
 
+    @JsonManagedReference
     public Set<Model> getModels() {
         return models;
     }

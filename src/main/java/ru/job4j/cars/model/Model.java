@@ -1,5 +1,7 @@
 package ru.job4j.cars.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
@@ -15,16 +17,17 @@ public class Model {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "brand_id", nullable = false, updatable = false)
     private Brand brand;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "model_body",
             joinColumns = {@JoinColumn(name = "model_id", nullable = false, updatable = false)},
             inverseJoinColumns = {
                     @JoinColumn(name = "body_id", nullable = false, updatable = false)
             })
+
     private Set<Body> bodies = new HashSet<>();
 
     public Model() {
@@ -50,6 +53,7 @@ public class Model {
         this.name = name;
     }
 
+    @JsonBackReference
     public Brand getBrand() {
         return brand;
     }

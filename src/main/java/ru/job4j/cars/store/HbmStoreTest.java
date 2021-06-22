@@ -65,7 +65,7 @@ public class HbmStoreTest {
 
         store.save(post1);
         store.save(post2);
-        var allPost = store.findAllPost();
+        var allPost = store.findAll(Post.class);
         assertThat(allPost.size(), is(2));
         var todayPost = store.findTodayPost();
         assertThat(todayPost.size(), is(2));
